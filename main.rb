@@ -15,7 +15,7 @@ image_i = PureCV::Image.new(300, 300, "I")
 
 (0...image_i.height).each do |y|
   (0...image_i.width).each do |x|
-    image_i.set_pixel_i(x, y, 128)
+    image_i.set_pixel_i(x, y, 86)
   end
 end
 image_i.save_as("test_i.png")

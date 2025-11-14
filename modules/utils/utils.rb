@@ -2,6 +2,17 @@ module Utils
 
   module ImageUtils
 
+    def self.get_raw_pixels(channels, data)
+      if channels == "I"
+        return data.flatten.flat_map do |value|
+          value_16_bit = value * 257
+          [value_16_bit, value_16_bit, value_16_bit]
+        end
+      else
+        return data.flatten.map { |color_intensity| color_intensity * 257 }
+      end
+    end
+
     def self.default_pixel_value(channels)
       case channels
       when "RGB"

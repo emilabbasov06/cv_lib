@@ -63,17 +63,9 @@ module PureCV
         # The reason I multiplied the pixel color_intensity to 257 is that rmagick uses 16-bit depth
         # but we import 8-bit depth values
 
-        if @channels == "I"
-          raw_pixels = @data.flatten.flat_map do |value|
-            value_16_bit = value * 257
-            [value_16_bit, value_16_bit, value_16_bit]
-          end
-        else
-          raw_pixels = @data.flatten.map { |color_intensity| color_intensity * 257 }
-        end
+        raw_pixels = Utils::ImageUtils.get_raw_pixels(@channels, @data)
 
         image = Magick::Image.new(@width, @height)
-
         image.import_pixels(
           0,
           0,
@@ -82,8 +74,6 @@ module PureCV
           @channels == "I" ? "RGB" : @channels,
           raw_pixels
         )
-
-        
 
         image.write(file_name)
         
