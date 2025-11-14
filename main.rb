@@ -1,13 +1,24 @@
 require_relative "modules/pure_cv/image"
 
-image = PureCV::Image.new(300, 400, "CMYK")
+image_rgb = PureCV::Image.new(300, 400, "RGB")
 
-(0...image.height).each do |y|
-  (0...image.width).each do |x|
-    image.set_pixel(x, y, [0, 0, 255]) # 200 is a code for blue color
+(0...image_rgb.height).each do |y|
+  (0...image_rgb.width).each do |x|
+    image_rgb.set_pixel_rgb(x, y, [0, 255, 0])
   end
 end
+image_rgb.save_as("test_rgb.png")
 
-p image.data
 
-image.save_as("another_test.png")
+
+image_i = PureCV::Image.new(300, 400, "I")
+
+(0...image_i.height).each do |y|
+  (0...image_i.width).each do |x|
+    image_i.set_pixel_i(x, y, 18)
+  end
+end
+image_i.save_as("test_i_another.png")
+
+p image_rgb.channels
+p image_i.channels
