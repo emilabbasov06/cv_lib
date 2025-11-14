@@ -1,5 +1,6 @@
 require_relative "modules/pure_cv/image"
 
+
 image_rgb = PureCV::Image.new(300, 300, "RGB")
 
 (0...image_rgb.height).each do |y|
