@@ -22,4 +22,4 @@ require_relative "modules/pure_cv/image"
 # image_i.save_as("test_i.png")
 
 
-image = PureCV::Image.from_ppm("./test.ppm", "testing_ppm.png")
+image = PureCV::Image.from_ppm_to_image("./test.ppm", "testing_ppm.png")

@@ -10,7 +10,7 @@ module PureCV
 
     class << self
       
-      def from_ppm(file_path, file_name)
+      def from_ppm_to_image(file_path, file_name)
         lines = File.readlines(file_path).map(&:strip)
 
         # Checks if first line in PPM file equals to "P3" which it must be
