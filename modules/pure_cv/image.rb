@@ -8,6 +8,37 @@ module PureCV
     attr_reader :width, :height, :channels, :data, :default_pixel
 
 
+    class << self
+      
+      def from_ppm(file_path, file_name)
+        lines = File.readlines(file_path).map(&:strip)
+
+        # Checks if first line in PPM file equals to "P3" which it must be
+        raise "Invalid PPM" unless lines[0] == "P3"
+
+
+        # Extracting width, height and maximum color intensity value (max. 255)
+        width, height = lines[1].split.map(&:to_i)
+        max_value = lines[2].to_i
+        raise "Max value must be 255" unless max_value == 255
+
+        # Creating new image from self
+        image = self.new(width, height, "RGB")
+
+        # Extracting pixel values and inserting them to create .png or .jpg image from PPM file
+        pixel_values = lines[3..].join(" ").split.map(&:to_i)
+        pixel_values.each_slice(3).with_index do |(r, g, b), idx|
+          y = idx / width
+          x = idx % width
+          image.set_pixel_rgb(x, y, [r, g, b])
+        end
+
+        image.save_as(file_name)
+      end
+
+    end
+
+
     def initialize(width, height, channels)
       @width = width
       @height = height
