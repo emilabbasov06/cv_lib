@@ -29,7 +29,7 @@ module Utils
       end
     end
 
-    def self.check_boundaries(x, y, width, height)
+    def self.in_bounds?(x, y, width, height)
       if x < 0 || x >= width || y < 0 || y >= height
         return false
       end

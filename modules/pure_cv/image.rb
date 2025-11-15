@@ -108,7 +108,7 @@ module PureCV
 
 
     def get_pixel(x, y)
-      if !Utils::ImageUtils.check_boundaries(x, y, @width, @height)
+      if !Utils::ImageUtils.in_bounds?(x, y, @width, @height)
         raise ArgumentError, "Coordinates (#{x}, #{y}) are outside of image boundaries!"
       end
 
@@ -117,7 +117,7 @@ module PureCV
 
 
     def set_pixel_rgb(x, y, color_rgb)
-      if !Utils::ImageUtils.check_boundaries(x, y, @width, @height)
+      if !Utils::ImageUtils.in_bounds?(x, y, @width, @height)
         raise ArgumentError, "Coordinates (#{x}, #{y}) are outside of image boundaries!"
       end
 
@@ -130,7 +130,7 @@ module PureCV
 
     
     def set_pixel_i(x, y, color_i)
-      if !Utils::ImageUtils.check_boundaries(x, y, @width, @height)
+      if !Utils::ImageUtils.in_bounds?(x, y, @width, @height)
         raise ArgumentError, "Coordinates (#{x}, #{y}) are outside of image boundaries!"
       end
 
