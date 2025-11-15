@@ -1,18 +1,20 @@
 require "rmagick"
 require "chunky_png"
-require_relative "../utils/utils"
+require_relative "../utils/date_utils"
+require_relative "../utils/image_utils"
 
 
 module PureCV
 
   class Image
-    attr_reader :width, :height, :channels, :data, :default_pixel
+    attr_reader :width, :height, :channels, :data, :created_at
 
 
     def initialize(width, height, channels)
       @width = width
       @height = height
       @channels = channels.upcase
+      @created_at = Utils::DateUtils.get_current_date
 
       # This creates a palatte type thing which is contained with pixels (all default values are 0)
       # we will change the data by Image#set_pixel and Image#get_pixel afterwards
