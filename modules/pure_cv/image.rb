@@ -8,7 +8,8 @@ require_relative "../errors/errors"
 module PureCV
 
   class Image
-    attr_reader :width, :height, :channels, :data, :created_at
+    attr_reader :width, :height, :channels, :created_at
+    attr_accessor :data
 
 
     def initialize(width, height, channels)
@@ -111,36 +112,21 @@ module PureCV
 
 
     def get_pixel(x, y)
-      if !Utils::ImageUtils.in_bounds?(x, y, @width, @height)
-        raise ArgumentError, "Coordinates (#{x}, #{y}) are outside of image boundaries!"
-      end
-
+      check_bounds!(x, y)
       @data[y][x]
     end
 
 
     def set_pixel_rgb(x, y, color_rgb)
-      if !Utils::ImageUtils.in_bounds?(x, y, @width, @height)
-        raise ArgumentError, "Coordinates (#{x}, #{y}) are outside of image boundaries!"
-      end
-
-      unless color_rgb.is_a?(Array) && color_rgb.length == 3
-        raise ArgumentError, "Color must be an array of 3 values"
-      end
-
+      check_bounds!(x, y)
+      raise ArgumentError, "Color must be an array of 3 values" unless color_rgb.is_a?(Array) && color_rgb.length == 3
       @data[y][x] = color_rgb
     end
 
     
     def set_pixel_i(x, y, color_i)
-      if !Utils::ImageUtils.in_bounds?(x, y, @width, @height)
-        raise ArgumentError, "Coordinates (#{x}, #{y}) are outside of image boundaries!"
-      end
-
-      unless color_i.is_a?(Integer) && color_i >= 0 && color_i <= 255
-        raise ArgumentError, "Color value must be between 0 and 255 (both inclusive)"
-      end
-
+      check_bounds!(x, y)
+      raise ArgumentError, "Color value must be between 0 and 255 (both inclusive)" unless color_i.is_a?(Integer) && color_i >= 0 && color_i <= 255
       @data[y][x] = color_i
     end
 
@@ -148,15 +134,9 @@ module PureCV
     # This method will deep clone the given image
     def clone
       d_clone = PureCV::Image.new(@width, @height, @channels)
-      d_clone_data = d_clone.instance_variable_get(:@data)
-
-      (0...@height).each do |y|
-        (0...@width).each do |x|
-          pixel = data[y][x]
-          d_clone_data[y][x] = pixel.is_a?(Array) ? pixel.dup : pixel
-        end
+      d_clone.data = @data.map do |row|
+        row.map { |pixel| pixel.is_a?(Array) ? pixel.dup : pixel }
       end
-
       d_clone
     end
 
@@ -187,6 +167,15 @@ module PureCV
         puts "[ERROR]: An error occured during file creation: #{e.message}"
       end
     end
+
+###########################################################
+# PRIVATE METHODS START HERE
+###########################################################
+
+    private def check_bounds!(x, y)
+      raise PureCVErrors::CoordinateBoundaries unless Utils::ImageUtils.in_bounds?(x, y, @width, @height)
+    end
+
   end
 
 end
