@@ -143,7 +143,18 @@ module PureCV
 
     
     # This method will deep clone the given image
-    def clone(file_name)
+    def clone
+      d_clone = PureCV::Image.new(@width, @height, @channels)
+      d_clone_data = d_clone.instance_variable_get(:@data)
+
+      (0...@height).each do |y|
+        (0...@width).each do |x|
+          pixel = data[y][x]
+          d_clone_data[y][x] = pixel.is_a?(Array) ? pixel.dup : pixel
+        end
+      end
+
+      d_clone
     end
 
 
