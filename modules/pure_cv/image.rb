@@ -2,6 +2,7 @@ require "rmagick"
 require "chunky_png"
 require_relative "../utils/date_utils"
 require_relative "../utils/image_utils"
+require_relative "../errors/errors"
 
 
 module PureCV
@@ -31,7 +32,7 @@ module PureCV
     
     def self.from_ppm_to_png(file_path, file_name)
       begin
-        raise "File extension must be .png" unless file_name.include?(".png")
+        raise PureCVErrors::FileExtensionError unless file_name.include?(".png")
 
         lines = File.readlines(file_path).map(&:strip)
 
@@ -57,8 +58,8 @@ module PureCV
 
         image.save_as(file_name)
         puts "[SUCCESS]: Created new PNG named \"#{file_name}\" image from \"#{file_path}\""
-      rescue => e
-        puts "[ERROR]: #{e.message}"
+      rescue PureCVErrors::FileExtensionError => e
+        puts "[ERROR #{e.class}]: File extension must be .png"
       end
       
     end
@@ -66,7 +67,7 @@ module PureCV
 
     def self.from_png_to_ppm(file_path, file_name)
       begin
-        raise "File extension must be .ppm" unless file_name.include?(".ppm")
+        raise PureCVErrors::FileExtensionError unless file_name.include?(".ppm")
 
         image = ChunkyPNG::Image.from_file(file_path)
         
@@ -98,8 +99,8 @@ module PureCV
         end
 
         puts "[SUCCESS]: Created new PPM file named \"#{file_name}\" from \"#{file_path}\""
-      rescue => e
-        puts "[ERROR]: #{e.message}"
+      rescue PureCVErrors::FileExtensionError => e
+        puts "[ERROR #{e.class}]: File extension must be .ppm"
       end
     end
 
