@@ -9,6 +9,24 @@ module PureCV
     attr_reader :width, :height, :channels, :data, :default_pixel
 
 
+    def initialize(width, height, channels)
+      @width = width
+      @height = height
+      @channels = channels.upcase
+
+      # This creates a palatte type thing which is contained with pixels (all default values are 0)
+      # we will change the data by Image#set_pixel and Image#get_pixel afterwards
+      # @data = Array.new(@height) { Array.new(@width, 0) }
+      @default_pixel = Utils::ImageUtils.default_pixel_value(@channels)
+      @data = Array.new(@height) do
+        Array.new(@width) {@default_pixel.dup rescue @default_pixel}
+      end
+    end
+
+###########################################################
+# CLASS METHODS START HERE
+###########################################################
+    
     def self.from_ppm_to_png(file_path, file_name)
       begin
         raise "File extension must be .png" unless file_name.include?(".png")
@@ -84,19 +102,9 @@ module PureCV
     end
 
 
-    def initialize(width, height, channels)
-      @width = width
-      @height = height
-      @channels = channels.upcase
-
-      # This creates a palatte type thing which is contained with pixels (all default values are 0)
-      # we will change the data by Image#set_pixel and Image#get_pixel afterwards
-      # @data = Array.new(@height) { Array.new(@width, 0) }
-      @default_pixel = Utils::ImageUtils.default_pixel_value(@channels)
-      @data = Array.new(@height) do
-        Array.new(@width) {@default_pixel.dup rescue @default_pixel}
-      end
-    end
+###########################################################
+# INSTANCE METHODS START HERE
+###########################################################
 
 
     def get_pixel(x, y)
@@ -131,6 +139,11 @@ module PureCV
       end
 
       @data[y][x] = color_i
+    end
+
+    
+    # This method will deep clone the given image
+    def clone(file_name)
     end
 
 
