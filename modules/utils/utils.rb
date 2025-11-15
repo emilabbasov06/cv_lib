@@ -2,6 +2,11 @@ module Utils
 
   module ImageUtils
 
+    def self.generate_ppm_header(width, height, max_value)
+      "P3\n#{width} #{height}\n#{max_value}\n"
+    end
+
+
     def self.get_raw_pixels(channels, data)
       if channels == "I"
         return data.flatten.flat_map do |value|

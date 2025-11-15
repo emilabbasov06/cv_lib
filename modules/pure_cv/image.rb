@@ -1,4 +1,5 @@
 require "rmagick"
+require "chunky_png"
 require_relative "../utils/utils"
 
 
@@ -8,9 +9,10 @@ module PureCV
     attr_reader :width, :height, :channels, :data, :default_pixel
 
 
-    class << self
-      
-      def from_ppm_to_image(file_path, file_name)
+    def self.from_ppm_to_png(file_path, file_name)
+      begin
+        raise "File extension must be .png" unless file_name.include?(".png")
+
         lines = File.readlines(file_path).map(&:strip)
 
         # Checks if first line in PPM file equals to "P3" which it must be
@@ -34,8 +36,51 @@ module PureCV
         end
 
         image.save_as(file_name)
+        puts "[SUCCESS]: Created new PNG named \"#{file_name}\" image from \"#{file_path}\""
+      rescue => e
+        puts "[ERROR]: #{e.message}"
       end
+      
+    end
 
+
+    def self.from_png_to_ppm(file_path, file_name)
+      begin
+        raise "File extension must be .ppm" unless file_name.include?(".ppm")
+
+        image = ChunkyPNG::Image.from_file(file_path)
+        
+        File.open(file_name, "w") do |ppm_file|
+          ppm_file.write(
+            Utils::ImageUtils.generate_ppm_header(
+              image.width,
+              image.height,
+              "255"
+            )
+          )
+
+          (0...image.height).each do |y|
+
+            (0...image.width).each do |x|
+
+              pixel_color = image[x, y]
+              value = [
+                ChunkyPNG::Color.r(pixel_color),
+                ChunkyPNG::Color.g(pixel_color),
+                ChunkyPNG::Color.b(pixel_color)
+              ]
+
+              ppm_file.write("#{value.join(" ")} ")
+            end
+
+          end
+
+        end
+
+        puts "[SUCCESS]: Created new PPM file named \"#{file_name}\" from \"#{file_path}\""
+      rescue => e
+        puts "[ERROR]: #{e.message}"
+      end
     end
 
 
