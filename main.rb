@@ -19,4 +19,4 @@ require_relative "modules/pure_cv/color"
 # image_rgb_clone.save_as("clone.png")
 
 
-PureCV::Color.png_average_grayscale("hiking.png")
+PureCV::Color.to_grayscale("hiking.png", grayscale_type: :weighted)
