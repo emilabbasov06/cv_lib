@@ -1,5 +1,5 @@
-require_relative "modules/pure_cv/image"
-require_relative "modules/pure_cv/color"
+require_relative "lib/pure_cv/image"
+require_relative "lib/pure_cv/color"
 
 
 # image_rgb = PureCV::Image.new(300, 300, "RGB")
