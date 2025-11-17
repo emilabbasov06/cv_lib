@@ -2,6 +2,25 @@ module Utils
 
   module ImageUtils
 
+    def self.read_ppm_file(file_path)
+      lines = File.readlines(file_path).map(&:strip)
+      raise "Invalid PPM" unless lines[0] == "P3"
+      new_file_name = "#{file_path.split(".ppm")[0]}.png"
+
+      width, height = lines[1].split.map(&:to_i)
+      max_value = lines[2].to_i
+      pixel_values = lines[3..].join(" ").split.map(&:to_i)
+
+      return {
+        width: width,
+        height: height,
+        max_value: max_value,
+        pixel_values: pixel_values,
+        new_file_name: new_file_name
+      }
+    end
+
+
     def self.generate_ppm_header(width, height, max_value)
       "P3\n#{width} #{height}\n#{max_value}\n"
     end
