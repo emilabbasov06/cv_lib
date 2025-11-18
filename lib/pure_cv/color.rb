@@ -10,9 +10,9 @@ module PureCV
     def self.otsu_threshold(file_path, grayscale_type: :weighted)
       ppm_path = case grayscale_type
       when :average
-        self.png_average_grayscale(file_path) # This saves an intermediate grayscale PPM
+        self.png_average_grayscale(file_path)
       when :weighted
-        self.png_weighted_grayscale(file_path) # This saves an intermediate grayscale PPM
+        self.png_weighted_grayscale(file_path)
       else
         puts "[ERROR]: Invalid grayscale type provided"
         return
@@ -27,7 +27,10 @@ module PureCV
       output_filename = "thresholded_otsu_#{File.basename(file_path, '.*')}.png"
       thresholded_image = PureCV::Image.new(width, height, "I")
 
-      image_data[:pixel_values].each_with_index do | intensity, idx |
+      grayscale_pixels = image_data[:pixel_values].each_slice(3).map do |r,g,b|
+        ((0.299*r + 0.587*g + 0.114*b).round).clamp(0,255)
+      end
+      grayscale_pixels.each_with_index do | intensity, idx |
         y = idx / width
         x = idx % width
 
