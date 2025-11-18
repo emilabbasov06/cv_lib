@@ -7,7 +7,38 @@ module PureCV
   
   module Color
 
-    
+    def self.otsu_threshold(file_path, grayscale_type: :weighted)
+      ppm_path = case grayscale_type
+      when :average
+        self.png_average_grayscale(file_path) # This saves an intermediate grayscale PPM
+      when :weighted
+        self.png_weighted_grayscale(file_path) # This saves an intermediate grayscale PPM
+      else
+        puts "[ERROR]: Invalid grayscale type provided"
+        return
+      end
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      optimal_threshold = Utils::ImageUtils.calculate_otsu_threshold_value(image_data[:pixel_values])
+
+      width = image_data[:width].to_i
+      height = image_data[:height].to_i
+
+      output_filename = "thresholded_otsu_#{File.basename(file_path, '.*')}.png"
+      thresholded_image = PureCV::Image.new(width, height, "I")
+
+      image_data[:pixel_values].each_with_index do | intensity, idx |
+        y = idx / width
+        x = idx % width
+
+        binary_value = intensity > optimal_threshold ? 255 : 0
+        thresholded_image.set_pixel_i(x, y, binary_value)
+      end
+
+      thresholded_image.save_as(output_filename)
+      File.delete(ppm_path)
+    end
+
 
     def self.increase_brightness_of_png(file_path, brightness_value)
       ppm_path = "brightness_#{file_path.split(".png")[0]}.ppm"
@@ -27,6 +58,7 @@ module PureCV
       end
 
       image.save_as("brightness_#{file_path.split(".png")[0]}.png")
+      File.delete(ppm_path)
     end
 
     def self.invert_colors_png(file_path)
@@ -47,6 +79,7 @@ module PureCV
       end
 
       image.save_as("inverted_#{file_path.split(".png")[0]}.png")
+      File.delete(ppm_path)
     end
 
     def self.rotate_image(file_path)
@@ -82,6 +115,8 @@ module PureCV
       end
 
       image.save_as(image_data[:new_file_name])
+
+      return ppm_path
     end
 
     def self.png_weighted_grayscale(file_path)
@@ -100,6 +135,8 @@ module PureCV
       end
 
       image.save_as(image_data[:new_file_name])
+
+      return ppm_path
     end
 
 
