@@ -1,3 +1,4 @@
+require "chunky_png"
 require_relative "./image"
 require_relative "../utils/image_utils"
 
@@ -5,6 +6,32 @@ require_relative "../utils/image_utils"
 module PureCV
   
   module Color
+
+    def self.invert_colors_png(file_path)
+      ppm_path = "inverted_#{file_path.split(".png")[0]}.ppm"
+      PureCV::Image.from_png_to_ppm(file_path, ppm_path)
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      image = PureCV::Image.new(image_data[:width].to_i, image_data[:height].to_i, "RGB")
+
+      image_data[:pixel_values].each_slice(3).with_index do | (r, g, b), idx |
+        y = idx / image_data[:width]
+        x = idx % image_data[:width]
+        inverted_r = 255 - r
+        inverted_g = 255 - g
+        inverted_b = 255 - b
+
+        image.set_pixel_rgb(x, y, [inverted_r, inverted_g, inverted_b])
+      end
+
+      image.save_as("inverted_#{file_path.split(".png")[0]}.png")
+    end
+
+    def self.rotate_image(file_path)
+      image = ChunkyPNG::Image.from_file(file_path)
+      rotated_image = image.rotate_180
+      rotated_image.save("#{file_path.split(".")[0]}_rotated.png")
+    end
 
     def self.to_grayscale(file_path, grayscale_type: :average)
       case grayscale_type
