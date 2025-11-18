@@ -2,6 +2,15 @@ module Utils
 
   module ImageUtils
 
+    def self.add_brightness(color_value, brightness)
+      if color_value + brightness <= 255 && color_value + brightness >= 0
+        return color_value + brightness
+      end
+
+      return color_value
+    end
+
+
     def self.read_ppm_file(file_path)
       lines = File.readlines(file_path).map(&:strip)
       raise "Invalid PPM" unless lines[0] == "P3"

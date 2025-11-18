@@ -7,6 +7,28 @@ module PureCV
   
   module Color
 
+    
+
+    def self.increase_brightness_of_png(file_path, brightness_value)
+      ppm_path = "brightness_#{file_path.split(".png")[0]}.ppm"
+      PureCV::Image.from_png_to_ppm(file_path, ppm_path)
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      image = PureCV::Image.new(image_data[:width], image_data[:height], "RGB")
+
+      image_data[:pixel_values].each_slice(3).with_index do | (r, g, b), idx |
+        y = idx / image_data[:width]
+        x = idx % image_data[:width]
+        new_r = Utils::ImageUtils.add_brightness(r, brightness_value)
+        new_g = Utils::ImageUtils.add_brightness(g, brightness_value)
+        new_b = Utils::ImageUtils.add_brightness(b, brightness_value)
+
+        image.set_pixel_rgb(x, y, [new_r, new_g, new_b])
+      end
+
+      image.save_as("brightness_#{file_path.split(".png")[0]}.png")
+    end
+
     def self.invert_colors_png(file_path)
       ppm_path = "inverted_#{file_path.split(".png")[0]}.ppm"
       PureCV::Image.from_png_to_ppm(file_path, ppm_path)
