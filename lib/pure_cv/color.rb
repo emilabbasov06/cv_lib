@@ -7,6 +7,58 @@ module PureCV
   
   module Color
 
+    def self.adjust_saturation(file_path, value, type: :increment)
+      norm = 255.0
+      ppm_path = "saturation_#{File.basename(file_path, ".*")}.ppm"
+      PureCV::Image.from_png_to_ppm(file_path, ppm_path)
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      width = image_data[:width].to_i
+      height = image_data[:height].to_i
+      new_image = PureCV::Image.new(width, height, "RGB")
+
+      image_data[:pixel_values].each_slice(3).with_index do | (r, g, b), idx |
+        
+        y = idx / width
+        x = idx % width
+
+        r_float = r / norm
+        g_float = g / norm
+        b_float = b / norm
+
+        gray = 0.2989 * r_float + 0.5870 * g_float + 0.1140 * b_float
+
+
+        case type
+        when :increment
+          value = 0.5
+
+          r_new_float = -gray * value + r_float * (1 + value)
+          g_new_float = -gray * value + g_float * (1 + value)
+          b_new_float = -gray * value + b_float * (1 + value)
+        when :decrement
+          value = -0.5
+
+          r_new_float = -gray * value + r_float * (1 + value)
+          g_new_float = -gray * value + g_float * (1 + value)
+          b_new_float = -gray * value + b_float * (1 + value)
+        end
+
+        r_new_float = [[0.0, r_new_float].max, 1.0].min
+        g_new_float = [[0.0, g_new_float].max, 1.0].min
+        b_new_float = [[0.0, b_new_float].max, 1.0].min
+
+        r_new = (r_new_float * norm).round
+        g_new = (g_new_float * norm).round
+        b_new = (b_new_float * norm).round
+
+
+        new_image.set_pixel_rgb(x, y, [r_new, g_new, b_new])
+      end
+
+      new_image.save_as("saturation_#{File.basename(file_path, ".*")}.png")
+    end
+
     def self.otsu_threshold(file_path, grayscale_type: :weighted)
       ppm_path = case grayscale_type
       when :average

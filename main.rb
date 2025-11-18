@@ -19,4 +19,4 @@ require_relative "lib/pure_cv/color"
 # image_rgb_clone.save_as("clone.png")
 
 
-PureCV::Color.otsu_threshold("hiking.png")
+PureCV::Color.adjust_saturation("hiking.png", 100, type: :decrement)
