@@ -7,6 +7,34 @@ module PureCV
   
   module Color
 
+    def self.rotate_90(file_path)
+      ppm_path = "rotated_#{File.basename(file_path, ".*")}.ppm"
+      PureCV::Image.from_png_to_ppm(file_path, ppm_path)
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      width = image_data[:height]
+      height = image_data[:width]
+      center_x = width / 2
+      center_y = height / 2
+
+      image = PureCV::Image.new(width, height, "RGB")
+
+      image_data[:pixel_values].each_slice(3).with_index do | (r, g, b), idx |
+        y = idx / image_data[:width]
+        x = idx % image_data[:width]
+
+        new_x = (height - 1) - y
+        new_y = x
+
+        if new_x >= 0 && new_x < width && new_y >= 0 && new_y < height
+          image.set_pixel_rgb(new_x, new_y, [r, g, b])
+        end
+      end
+
+      image.save_as("rotated_#{File.basename(file_path, ".*")}.png")
+      File.delete(ppm_path)
+    end
+
     def self.flip(file_path, type: :vertical)
       ppm_path = "flipped_#{File.basename(file_path, ".*")}.ppm"
       PureCV::Image.from_png_to_ppm(file_path, ppm_path)
