@@ -7,6 +7,26 @@ module PureCV
   
   module Color
 
+    def self.histogram(file_path)
+      red = Array.new(256, 0)
+      green = Array.new(256, 0)
+      blue = Array.new(256, 0)
+
+      ppm_path = "histogram_#{File.basename(file_path)}.ppm"
+      PureCV::Image.from_png_to_ppm(file_path, ppm_path)
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      
+      image_data[:pixel_values].each_slice(3) do | r, g, b |
+        red[r] += 1
+        green[g] += 1
+        blue[b] += 1
+      end
+
+      File.delete(ppm_path)
+      { red: red, green: green, blue: blue }
+    end
+
     def self.translate(file_path, dx, dy)
       ppm_path = "translated_#{File.basename(file_path, ".*")}.ppm"
       PureCV::Image.from_png_to_ppm(file_path, ppm_path)

@@ -18,4 +18,4 @@ require_relative "lib/pure_cv/color"
 
 # image_rgb_clone.save_as("clone.png")
 
-PureCV::Color.translate("hiking.png", 50, 20)
+p PureCV::Color.histogram("hiking.png")
