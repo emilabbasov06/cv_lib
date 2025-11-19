@@ -14,8 +14,6 @@ module PureCV
       image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
       width = image_data[:height]
       height = image_data[:width]
-      center_x = width / 2
-      center_y = height / 2
 
       image = PureCV::Image.new(width, height, "RGB")
 
