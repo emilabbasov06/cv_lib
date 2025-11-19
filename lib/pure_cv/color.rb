@@ -7,6 +7,33 @@ module PureCV
   
   module Color
 
+    def self.flip(file_path, type: :vertical)
+      ppm_path = "flipped_#{File.basename(file_path, ".*")}.ppm"
+      PureCV::Image.from_png_to_ppm(file_path, ppm_path)
+
+      image_data = Utils::ImageUtils.read_ppm_file(ppm_path)
+      width = image_data[:width]
+      height = image_data[:height]
+      image = PureCV::Image.new(width, height, "RGB")
+
+      image_data[:pixel_values].each_slice(3).with_index do | (r, g, b), idx |
+        y = idx / width
+        x = idx % width
+
+        case type
+        when :vertical
+          y = (height - 1 - y)
+        when :horizontal
+          x = (width - 1 - x)
+        end
+
+        image.set_pixel_rgb(x, y, [r, g, b])
+      end
+
+      image.save_as("flipped_#{File.basename(file_path, ".*")}.png")
+      File.delete(ppm_path)
+    end
+
     def self.adjust_saturation(file_path, value, type: :increment)
       norm = 255.0
       ppm_path = "saturation_#{File.basename(file_path, ".*")}.ppm"
